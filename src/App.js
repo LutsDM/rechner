@@ -14,14 +14,13 @@ const getNowParts = () => {
   };
 };
 
-const getTomorrowParts = () => {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
+const getToParts = () => {
+  const to = new Date();
   return {
-    date: tomorrow.toISOString().slice(0, 10),
-    hour: pad(tomorrow.getHours()),
-    minute: pad(tomorrow.getMinutes()),
-    second: pad(tomorrow.getSeconds()),
+    date: to.toISOString().slice(0, 10),
+    hour: pad(to.getHours() + 1),
+    minute: pad(to.getMinutes()),
+    second: pad(to.getSeconds())
   };
 };
 
@@ -33,7 +32,7 @@ const MILLISECONDS_IN_SECOND = 1000;
 
 export default function App() {
   const [start, setStart] = useState(getNowParts);
-  const [end, setEnd] = useState(getTomorrowParts);
+  const [end, setEnd] = useState(getToParts);
 
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
