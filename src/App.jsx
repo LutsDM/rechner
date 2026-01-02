@@ -20,7 +20,7 @@ const getToParts = () => {
     date: to.toISOString().slice(0, 10),
     hour: pad(to.getHours() + 1),
     minute: pad(to.getMinutes()),
-    second: pad(to.getSeconds())
+    second: pad(to.getSeconds()),
   };
 };
 
@@ -29,7 +29,6 @@ const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
 const MILLISECONDS_IN_MINUTE = 1000 * 60;
 const MILLISECONDS_IN_SECOND = 1000;
 
-
 export default function App() {
   const [start, setStart] = useState(getNowParts);
   const [end, setEnd] = useState(getToParts);
@@ -37,8 +36,7 @@ export default function App() {
   const [result, setResult] = useState("");
   const [error, setError] = useState("");
 
-  const timeOptions = (max) =>
-    Array.from({ length: max }, (_, i) => pad(i));
+  const timeOptions = (max) => Array.from({ length: max }, (_, i) => pad(i));
 
   const buildDate = ({ date, hour, minute, second }) => {
     if (!date) return null;
@@ -66,18 +64,24 @@ export default function App() {
     const diff = endDate - startDate;
 
     const days = Math.floor(diff / MILLISECONDS_IN_DAY);
-    const hours = Math.floor((diff % MILLISECONDS_IN_DAY) / MILLISECONDS_IN_HOUR);
-    const minutes = Math.floor((diff % MILLISECONDS_IN_HOUR) / MILLISECONDS_IN_MINUTE);
-    const seconds = Math.floor((diff % MILLISECONDS_IN_MINUTE) / MILLISECONDS_IN_SECOND);
+    const hours = Math.floor(
+      (diff % MILLISECONDS_IN_DAY) / MILLISECONDS_IN_HOUR
+    );
+    const minutes = Math.floor(
+      (diff % MILLISECONDS_IN_HOUR) / MILLISECONDS_IN_MINUTE
+    );
+    const seconds = Math.floor(
+      (diff % MILLISECONDS_IN_MINUTE) / MILLISECONDS_IN_SECOND
+    );
 
     setResult(
       `${days} Tage  ${hours} Stunden  ${minutes} Minuten  ${seconds} Sekunden`
     );
   };
 
-useEffect(() => {
-  calculateDifference();
-}, [start, end, calculateDifference]);  
+  useEffect(() => {
+    calculateDifference();
+  }, [start, end, calculateDifference]);
 
   return (
     <div className="min-h-screen bg-white p-6">
@@ -117,25 +121,24 @@ useEffect(() => {
   );
 }
 
-
 function TimeBlock({ title, value, onChange, timeOptions }) {
   return (
     <div className="bg-gray-100 p-4">
       <h2 className="text-blue-600 font-semibold mb-3">{title}</h2>
 
-   <div className="grid grid-cols-[minmax(120px,2fr)_1fr_1fr_1fr] gap-3 text-sm">
-  <div>
-    <label className="block mb-1 font-medium">Datum</label>
-    <input
-      type="date"
-      value={value.date}
-      onChange={(e) =>
-        onChange({ ...value, date: e.target.value })
-      }
-      className="w-full border px-2 py-1 bg-white"
-    />
-  </div>
+      {/* Datum */}
+      <div className="mb-3">
+        <label className="block mb-1 font-medium">Datum</label>
+        <input
+          type="date"
+          value={value.date}
+          onChange={(e) => onChange({ ...value, date: e.target.value })}
+          className="w-full border px-2 py-1 bg-white"
+        />
+      </div>
 
+      {/* Zeit */}
+      <div className="grid grid-cols-3 gap-3 sm:grid-cols-[1fr_1fr_1fr] text-sm">
         <SelectField
           label="Stunde"
           value={value.hour}
@@ -160,6 +163,7 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
     </div>
   );
 }
+
 
 function SelectField({ label, value, options, onChange }) {
   return (
