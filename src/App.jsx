@@ -127,13 +127,13 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
       <h2 className="text-blue-600 font-semibold mb-3">{title}</h2>
 
       {/* Datum */}
-      <div className="mb-3">
+      <div className="mb-3 overflow-hidden">
         <label className="block mb-1 font-medium">Datum</label>
         <input
           type="date"
           value={value.date}
           onChange={(e) => onChange({ ...value, date: e.target.value })}
-          className="w-full border px-2 h-9 text-sm bg-white"
+          className="w-full border px-2 py-1.5 text-sm bg-white box-border"
         />
       </div>
 
@@ -163,7 +163,6 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
     </div>
   );
 }
-
 
 function SelectField({ label, value, options, onChange }) {
   return (
