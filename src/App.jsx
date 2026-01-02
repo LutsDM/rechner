@@ -133,7 +133,7 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
           type="date"
           value={value.date}
           onChange={(e) => onChange({ ...value, date: e.target.value })}
-          className="w-full border px-2 py-1 bg-white"
+          className="w-full border px-2 h-9 text-sm bg-white"
         />
       </div>
 
