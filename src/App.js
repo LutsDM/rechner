@@ -25,7 +25,12 @@ const getTomorrowParts = () => {
   };
 };
 
-/* ---------- App ---------- */
+const MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
+const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
+const MILLISECONDS_IN_MINUTE = 1000 * 60;
+const MILLISECONDS_IN_SECOND = 1000;
+
+/* ---------- App Component ---------- */
 
 export default function App() {
   const [start, setStart] = useState(getNowParts);
@@ -62,10 +67,10 @@ export default function App() {
 
     const diff = endDate - startDate;
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
+    const days = Math.floor(diff / MILLISECONDS_IN_DAY);
+    const hours = Math.floor((diff % MILLISECONDS_IN_DAY) / MILLISECONDS_IN_HOUR);
+    const minutes = Math.floor((diff % MILLISECONDS_IN_HOUR) / MILLISECONDS_IN_MINUTE);
+    const seconds = Math.floor((diff % MILLISECONDS_IN_MINUTE) / MILLISECONDS_IN_SECOND);
 
     setResult(
       `${days} Tage  ${hours} Stunden  ${minutes} Minuten  ${seconds} Sekunden`
@@ -114,7 +119,7 @@ export default function App() {
   );
 }
 
-/* ---------- Subcomponents ---------- */
+/* ---------- TimeBlock Component ---------- */
 
 function TimeBlock({ title, value, onChange, timeOptions }) {
   return (
@@ -158,6 +163,8 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
     </div>
   );
 }
+
+/* ---------- SelectField Component ---------- */
 
 function SelectField({ label, value, options, onChange }) {
   return (
