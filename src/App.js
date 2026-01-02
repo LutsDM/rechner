@@ -76,9 +76,9 @@ export default function App() {
     );
   };
 
-  useEffect(() => {
-    calculateDifference();
-  }, [start, end]);
+useEffect(() => {
+  calculateDifference();
+}, [start, end, calculateDifference]);  
 
   return (
     <div className="min-h-screen bg-white p-6">
