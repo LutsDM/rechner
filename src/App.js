@@ -30,7 +30,6 @@ const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
 const MILLISECONDS_IN_MINUTE = 1000 * 60;
 const MILLISECONDS_IN_SECOND = 1000;
 
-/* ---------- App Component ---------- */
 
 export default function App() {
   const [start, setStart] = useState(getNowParts);
@@ -119,7 +118,6 @@ export default function App() {
   );
 }
 
-/* ---------- TimeBlock Component ---------- */
 
 function TimeBlock({ title, value, onChange, timeOptions }) {
   return (
@@ -163,8 +161,6 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
     </div>
   );
 }
-
-/* ---------- SelectField Component ---------- */
 
 function SelectField({ label, value, options, onChange }) {
   return (
