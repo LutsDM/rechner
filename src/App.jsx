@@ -127,13 +127,13 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
       <h2 className="text-blue-600 font-semibold mb-3">{title}</h2>
 
       {/* Datum */}
-      <div className="mb-3 overflow-hidden">
+      <div className="mb-3">
         <label className="block mb-1 font-medium">Datum</label>
         <input
           type="date"
           value={value.date}
           onChange={(e) => onChange({ ...value, date: e.target.value })}
-          className="w-full border px-2 py-1.5 text-sm bg-white box-border"
+          className="w-full border px-2 pr-8 py-1.5 text-sm bg-white box-border"
         />
       </div>
 
