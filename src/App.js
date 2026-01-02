@@ -124,18 +124,18 @@ function TimeBlock({ title, value, onChange, timeOptions }) {
     <div className="bg-gray-100 p-4">
       <h2 className="text-blue-600 font-semibold mb-3">{title}</h2>
 
-      <div className="grid grid-cols-4 gap-3 text-sm">
-        <div>
-          <label className="block mb-1 font-medium">Datum</label>
-          <input
-            type="date"
-            value={value.date}
-            onChange={(e) =>
-              onChange({ ...value, date: e.target.value })
-            }
-            className="w-full border px-2 py-1 bg-white"
-          />
-        </div>
+   <div className="grid grid-cols-[minmax(120px,2fr)_1fr_1fr_1fr] gap-3 text-sm">
+  <div>
+    <label className="block mb-1 font-medium">Datum</label>
+    <input
+      type="date"
+      value={value.date}
+      onChange={(e) =>
+        onChange({ ...value, date: e.target.value })
+      }
+      className="w-full border px-2 py-1 bg-white"
+    />
+  </div>
 
         <SelectField
           label="Stunde"
