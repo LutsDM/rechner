@@ -118,7 +118,18 @@ export default function App() {
             lang="de"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="h-9 w-full rounded-md border border-gray-300 px-2 text-sm bg-white"
+            className="
+    h-9
+    w-full
+    max-w-full
+    box-border
+    rounded-md
+    border border-gray-300
+    px-2
+    text-sm
+    bg-white
+    overflow-hidden
+  "
           />
         </div>
 
