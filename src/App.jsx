@@ -4,116 +4,202 @@ import { useState, useEffect } from "react";
 
 const pad = (n) => String(n).padStart(2, "0");
 
-const getNowParts = () => {
+const timeToSeconds = ({ hour, minute, second }) =>
+  Number(hour) * 3600 + Number(minute) * 60 + Number(second);
+
+const formatDuration = (seconds) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h} Stunden ${m} Minuten ${s} Sekunden`;
+};
+
+const getToday = () => new Date().toISOString().slice(0, 10);
+
+const getNowTime = () => {
   const now = new Date();
   return {
-    date: now.toISOString().slice(0, 10),
     hour: pad(now.getHours()),
     minute: pad(now.getMinutes()),
     second: pad(now.getSeconds()),
   };
 };
 
-const getToParts = () => {
-  const to = new Date();
+const getEndTime = () => {
+  const now = new Date();
+  now.setHours(now.getHours() + 1);
   return {
-    date: to.toISOString().slice(0, 10),
-    hour: pad(to.getHours() + 1),
-    minute: pad(to.getMinutes()),
-    second: pad(to.getSeconds()),
+    hour: pad(now.getHours()),
+    minute: pad(now.getMinutes()),
+    second: pad(now.getSeconds()),
   };
 };
 
-const MILLISECONDS_IN_DAY = 1000 * 60 * 60 * 24;
-const MILLISECONDS_IN_HOUR = 1000 * 60 * 60;
-const MILLISECONDS_IN_MINUTE = 1000 * 60;
-const MILLISECONDS_IN_SECOND = 1000;
+const emptyTime = { hour: "00", minute: "00", second: "00" };
 
 export default function App() {
-  const [start, setStart] = useState(getNowParts);
-  const [end, setEnd] = useState(getToParts);
+  const [date, setDate] = useState(getToday);
 
-  const [result, setResult] = useState("");
+  const [start, setStart] = useState(getNowTime);
+  const [end, setEnd] = useState(getEndTime);
+
+  const [abfahrt, setAbfahrt] = useState(emptyTime);
+  const [ankunft, setAnkunft] = useState(emptyTime);
+
+  const [includeFahrzeit, setIncludeFahrzeit] = useState(false);
+
+  const [report, setReport] = useState(null);
   const [error, setError] = useState("");
 
   const timeOptions = (max) => Array.from({ length: max }, (_, i) => pad(i));
 
-  const buildDate = ({ date, hour, minute, second }) => {
-    if (!date) return null;
-    return new Date(`${date}T${hour}:${minute}:${second}`);
-  };
+  useEffect(() => {
+    const startSec = timeToSeconds(start);
+    const endSec = timeToSeconds(end);
 
-  const calculateDifference = () => {
-    const startDate = buildDate(start);
-    const endDate = buildDate(end);
-
-    if (!startDate || !endDate) {
-      setResult("");
-      setError("");
+    if (startSec >= endSec) {
+      setError("Arbeitsbeginn muss vor dem Arbeitsende liegen.");
+      setReport(null);
       return;
     }
 
-    if (startDate > endDate) {
-      setResult("");
-      setError("Das Startdatum muss vor dem Enddatum liegen.");
-      return;
+    let fahrzeit = 0;
+
+    if (includeFahrzeit) {
+      const abfahrtSec = timeToSeconds(abfahrt);
+      const ankunftSec = timeToSeconds(ankunft);
+
+      if (abfahrtSec > ankunftSec) {
+        setError("Abfahrt darf nicht später als Ankunft sein.");
+        setReport(null);
+        return;
+      }
+
+      if (ankunftSec > startSec) {
+        setError("Arbeitsbeginn darf nicht vor der Ankunft liegen.");
+        setReport(null);
+        return;
+      }
+
+      if (abfahrtSec > endSec) {
+        setError("Abfahrt darf nicht nach dem Arbeitsende liegen.");
+        setReport(null);
+        return;
+      }
+
+      fahrzeit = ankunftSec - abfahrtSec;
     }
+
+    const arbeitszeit = endSec - startSec;
 
     setError("");
-
-    const diff = endDate - startDate;
-
-    const days = Math.floor(diff / MILLISECONDS_IN_DAY);
-    const hours = Math.floor(
-      (diff % MILLISECONDS_IN_DAY) / MILLISECONDS_IN_HOUR
-    );
-    const minutes = Math.floor(
-      (diff % MILLISECONDS_IN_HOUR) / MILLISECONDS_IN_MINUTE
-    );
-    const seconds = Math.floor(
-      (diff % MILLISECONDS_IN_MINUTE) / MILLISECONDS_IN_SECOND
-    );
-
-    setResult(
-      `${days} Tage  ${hours} Stunden  ${minutes} Minuten  ${seconds} Sekunden`
-    );
-  };
-
-  useEffect(() => {
-    calculateDifference();
-  }, [start, end, calculateDifference]);
+    setReport({
+      arbeitszeit,
+      fahrzeit,
+      gesamtzeit: arbeitszeit + fahrzeit,
+      includeFahrzeit,
+    });
+  }, [start, end, abfahrt, ankunft, includeFahrzeit]);
 
   return (
-    <div className="min-h-screen bg-white p-6">
-      <div className="max-w-5xl mx-auto space-y-8">
-        <h1 className="text-2xl font-semibold">Zeitraum Rechner</h1>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6">
+      <div className="max-w-4xl lg:max-w-xl mx-auto space-y-6">
+        <h1 className="text-2xl font-semibold text-gray-900">
+          Arbeitszeit Rechner
+        </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <TimeBlock
-            title="Von"
-            value={start}
-            onChange={setStart}
-            timeOptions={timeOptions}
-          />
-
-          <TimeBlock
-            title="Bis"
-            value={end}
-            onChange={setEnd}
-            timeOptions={timeOptions}
+        {/* Datum */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <label className="block text-xs font-medium text-gray-600 mb-1">
+            Arbeitsdatum
+          </label>
+          <input
+            type="date"
+            lang="de"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="h-9 w-full rounded-md border border-gray-300 px-2 text-sm bg-white"
           />
         </div>
 
+        {/* Fahrzeit */}
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-4">
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={includeFahrzeit}
+              onChange={(e) => setIncludeFahrzeit(e.target.checked)}
+              className="h-4 w-4"
+            />
+            Fahrzeit berücksichtigen
+          </label>
+
+          {includeFahrzeit && (
+            <div className="space-y-4 pt-2 border-t">
+              <TimeRow
+                label="Abfahrt"
+                value={abfahrt}
+                onChange={setAbfahrt}
+                timeOptions={timeOptions}
+              />
+              <TimeRow
+                label="Ankunft"
+                value={ankunft}
+                onChange={setAnkunft}
+                timeOptions={timeOptions}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Arbeitszeit */}
+        <TimeBlock
+          title="Von"
+          label="Arbeitsbeginn"
+          value={start}
+          onChange={setStart}
+          timeOptions={timeOptions}
+        />
+
+        <TimeBlock
+          title="Bis"
+          label="Arbeitsende"
+          value={end}
+          onChange={setEnd}
+          timeOptions={timeOptions}
+        />
+
         {error && (
-          <div className="bg-red-100 text-red-700 border border-red-300 p-3">
+          <div className="border border-red-300 bg-red-50 p-3 text-red-700 rounded-md">
             {error}
           </div>
         )}
 
-        {result && (
-          <div className="border p-4">
-            <div className="italic text-gray-500 mb-1">Ihr Ergebnis</div>
-            <div className="font-medium">{result}</div>
+        {report && (
+          <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-2">
+            <div className="text-xs uppercase tracking-wide text-gray-500">
+              Zeitbericht
+            </div>
+
+            <ReportRow
+              label="Arbeitszeit"
+              value={formatDuration(report.arbeitszeit)}
+            />
+
+            {report.includeFahrzeit && (
+              <ReportRow
+                label="Fahrzeit"
+                value={formatDuration(report.fahrzeit)}
+              />
+            )}
+
+            <div className="pt-2 border-t">
+              <ReportRow
+                label="Gesamtzeit"
+                value={formatDuration(report.gesamtzeit)}
+                strong
+              />
+            </div>
           </div>
         )}
       </div>
@@ -121,64 +207,58 @@ export default function App() {
   );
 }
 
-function TimeBlock({ title, value, onChange, timeOptions }) {
+/* ---------- UI Components ---------- */
+
+function TimeBlock({ title, label, value, onChange, timeOptions }) {
   return (
-    <div className="bg-gray-100 p-4">
-      <h2 className="text-blue-600 font-semibold mb-3">{title}</h2>
+    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm space-y-3">
+      <h2 className="text-sm font-semibold text-blue-600 uppercase">{title}</h2>
 
-      {/* Datum */}
-      <div className="mb-3">
-        <label className="block mb-1 font-medium">Datum</label>
-        <input
-          type="date"
-          value={value.date}
-          onChange={(e) => onChange({ ...value, date: e.target.value })}
-          className="block max-w-full border px-2 py-1.5 text-sm bg-white box-border"
-        />
-      </div>
+      <TimeRow
+        label={label}
+        value={value}
+        onChange={onChange}
+        timeOptions={timeOptions}
+      />
+    </div>
+  );
+}
 
-      {/* Zeit */}
-      <div className="grid grid-cols-3 gap-3 sm:grid-cols-[1fr_1fr_1fr] text-sm">
-        <SelectField
-          label="Stunde"
-          value={value.hour}
-          options={timeOptions(24)}
-          onChange={(v) => onChange({ ...value, hour: v })}
-        />
+function TimeRow({ label, value, onChange, timeOptions }) {
+  const labels = ["Stunde", "Minute", "Sekunde"];
 
-        <SelectField
-          label="Minute"
-          value={value.minute}
-          options={timeOptions(60)}
-          onChange={(v) => onChange({ ...value, minute: v })}
-        />
-
-        <SelectField
-          label="Sekunde"
-          value={value.second}
-          options={timeOptions(60)}
-          onChange={(v) => onChange({ ...value, second: v })}
-        />
+  return (
+    <div>
+      <div className="text-xs font-medium text-gray-600 mb-1">{label}</div>
+      <div className="grid grid-cols-3 gap-2">
+        {["hour", "minute", "second"].map((k, idx) => (
+          <div key={k}>
+            <div className="text-[10px] text-gray-500 mb-0.5 uppercase">
+              {labels[idx]}
+            </div>
+            <select
+              value={value[k]}
+              onChange={(e) => onChange({ ...value, [k]: e.target.value })}
+              className="h-9 w-full rounded-md border border-gray-300 bg-white px-2 text-sm"
+            >
+              {timeOptions(k === "hour" ? 24 : 60).map((v) => (
+                <option key={v} value={v}>
+                  {v}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
 
-function SelectField({ label, value, options, onChange }) {
+function ReportRow({ label, value, strong }) {
   return (
-    <div>
-      <label className="block mb-1 font-medium">{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border px-2 py-1 bg-white"
-      >
-        {options.map((v) => (
-          <option key={v} value={v}>
-            {v}
-          </option>
-        ))}
-      </select>
+    <div className="flex justify-between text-sm">
+      <span className="text-gray-600">{label}</span>
+      <span className={strong ? "font-semibold" : ""}>{value}</span>
     </div>
   );
 }
