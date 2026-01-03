@@ -38,6 +38,10 @@ const getEndTime = () => {
 const emptyTime = { hour: "00", minute: "00", second: "00" };
 
 export default function App() {
+  const isIOS =
+    typeof navigator !== "undefined" &&
+    /iPad|iPhone|iPod/.test(navigator.userAgent);
+
   const [date, setDate] = useState(getToday);
 
   const [start, setStart] = useState(getNowTime);
@@ -113,24 +117,29 @@ export default function App() {
           <label className="block text-xs font-medium text-gray-600 mb-1">
             Arbeitsdatum
           </label>
-          <input
-            type="date"
-            lang="de"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="
-    h-9
-    w-full
-    max-w-full
-    box-border
-    rounded-md
-    border border-gray-300
-    px-2
-    text-sm
-    bg-white
-    overflow-hidden
-  "
-          />
+
+          {isIOS ? (
+            <input
+              type="text"
+              value={new Date(date).toLocaleDateString("de-DE")}
+              readOnly
+              className="
+        h-9 w-full rounded-md border border-gray-300 px-2
+        text-sm bg-gray-50 text-gray-800
+      "
+            />
+          ) : (
+            <input
+              type="date"
+              lang="de"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="
+        h-9 w-full rounded-md border border-gray-300 px-2
+        text-sm bg-white
+      "
+            />
+          )}
         </div>
 
         {/* Fahrzeit */}
