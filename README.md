@@ -1,16 +1,59 @@
-# React + Vite
+# Arbeitszeit Rechner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ein kleiner Arbeitszeit-Rechner, der als Grundlage für ein internes Tool zur Zeiterfassung gedacht ist.  
+Das Projekt ist am ersten Arbeitstag in einem neuen Job entstanden und orientiert sich an realen Anforderungen aus dem Arbeitsalltag.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Erfassung eines Arbeitstags mit **einer zentralen Datumsangabe**
+- Arbeitszeit:
+  - Arbeitsbeginn (Von)
+  - Arbeitsende (Bis)
+- Optionale **Fahrzeit**:
+  - Abfahrt
+  - Ankunft
+- Plausibilitätsprüfungen:
+  - Arbeitsbeginn < Arbeitsende
+  - Abfahrt ≤ Ankunft
+  - Arbeitsbeginn nicht vor Ankunft
+  - Abfahrt nicht nach Arbeitsende
+- Übersichtlicher **Zeitbericht**:
+  - Arbeitszeit
+  - Fahrzeit
+  - Gesamtzeit
+- Mobile-freundliches Layout (optimiert für Smartphone-Nutzung)
 
-## React Compiler
+## 🧠 Motivation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Ziel war es, ein möglichst praxisnahes Tool zu bauen, das reale Arbeitsprozesse widerspiegelt.  
+Der Rechner soll nicht nur Zeiten addieren, sondern typische Fehler vermeiden und logisch korrekte Eingaben erzwingen.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- Vite
+- Tailwind CSS
+- JavaScript (ES6+)
+
+## 📈 Mögliche Weiterentwicklung
+
+- Entfernen der Sekunden zur Vereinfachung der Eingabe
+- Unterstützung mehrerer Mitarbeiter
+- Erfassung von Kundendaten
+- Speicherung der Daten in einer Datenbank
+- PDF-Berichte für Kunden
+- Integration in die Rechnungserstellung
+- Export (CSV / PDF)
+
+## ▶️ Demo
+
+GitHub Pages:  
+https://lutsdm.github.io/rechner/
+
+## 📝 Hinweis
+
+Das Projekt ist als funktionaler Prototyp gedacht und dient als Ausgangspunkt für ein internes Zeiterfassungssystem.
+
+---
+
+Made with a mix of real requirements, AI support and hands-on coding.
